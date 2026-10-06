@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page not found</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500&family=Source+Sans+3:wght@400;600&display=swap');
+
+        :root {
+            --paper: #f6f3ec;
+            --ink: #262220;
+            --ink-soft: #756c62;
+            --rule: #d8d1c4;
+            --accent: #6b5a3e;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            background: var(--paper);
+            color: var(--ink);
+            font-family: 'Source Sans 3', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .wrap {
+            max-width: 30rem;
+            text-align: left;
+        }
+
+        .code {
+            font-family: 'Fraunces', serif;
+            font-weight: 300;
+            font-size: clamp(6rem, 22vw, 10rem);
+            line-height: 0.9;
+            margin: 0;
+            letter-spacing: -0.03em;
+            position: relative;
+            display: inline-block;
+        }
+
+        .code .zero {
+            display: inline-block;
+            transform: rotate(-6deg) translateY(0.08em);
+            color: var(--accent);
+        }
+
+        .rule {
+            border: none;
+            border-top: 1px solid var(--rule);
+            margin: 1.75rem 0 1.5rem;
+        }
+
+        h3 {
+            font-family: 'Fraunces', serif;
+            font-weight: 500;
+            font-size: 1.4rem;
+            margin: 0 0 0.6rem;
+        }
+
+        p {
+            color: var(--ink-soft);
+            margin: 0 0 2rem;
+            max-width: 38ch;
+        }
+
+        a.home {
+            font-family: 'Source Sans 3', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--ink);
+            text-decoration: none;
+            border-bottom: 1px solid var(--ink);
+            padding-bottom: 2px;
+        }
+
+        a.home:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        @media (max-width: 420px) {
+            .wrap {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <p class="code">4<span class="zero">0</span>4</p>
+        <hr class="rule">
+        <h3>This page went missing</h3>
+        <p>Whatever you were looking for isn't at this address anymore, or never was.</p>
+        <a class="home" href="/">Back to the homepage</a>
+    </div>
+</body>
+
+</html>

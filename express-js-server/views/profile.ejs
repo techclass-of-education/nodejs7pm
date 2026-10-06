@@ -1,0 +1,17 @@
+<script>
+    function sendValues()
+    {
+        const id=document.querySelector("#id").value
+        const name=document.querySelector("#name").value
+        location.href=`/profile/${id}/${name}`
+    }
+</script>
+
+
+<h1>Profile id: <%=id%></h1>
+<h1>Name: <%=name%></h1>
+
+
+<input placeholder="name" id="name">
+<input placeholder="id" id="id">
+<button onclick="sendValues()">Send</button>

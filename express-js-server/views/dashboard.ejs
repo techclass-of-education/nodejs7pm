@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vistaar — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #171923;
+    --msg: #f3f3f5;
+    --ink-soft: #232637;
+    --parchment: #F5F1E8;
+    --parchment-dim: #EDE7D8;
+    --card: #FFFFFF;
+    --brass: #B8863C;
+    --brass-light: #D9B679;
+    --brass-wash: rgba(184,134,60,0.12);
+    --slate: #6B7280;
+    --slate-dark: #3E4453;
+    --sage: #5C7A5E;
+    --sage-wash: rgba(92,122,94,0.12);
+    --rust: #B3452C;
+    --line: rgba(245,241,232,0.14);
+    --line-soft: rgba(23,25,35,0.10);
+    --page-bg: #EDE7D8;
+  }
+
+  :root[data-theme="dark"] { --page-bg: #14151B; --parchment-dim: #EDE7D8; }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --page-bg: #14151B; }
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--page-bg);
+    font-family: "Work Sans", -apple-system, "Segoe UI", sans-serif;
+    color: var(--ink);
+  }
+
+  body { min-height: 100vh; display: flex; }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar {
+    width: 248px;
+    flex-shrink: 0;
+    background: var(--ink);
+    color: var(--parchment);
+    display: flex;
+    flex-direction: column;
+    padding: 28px 22px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+
+  .brand {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 21px;
+    font-weight: 500;
+    color: var(--parchment);
+    text-decoration: none;
+    margin-bottom: 40px;
+    display: block;
+  }
+  .brand span { color: var(--brass-light); }
+
+  nav.side-nav { display: flex; flex-direction: column; gap: 4px; }
+  nav.side-nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(245,241,232,0.68);
+    text-decoration: none;
+    font-size: 14.5px;
+    padding: 11px 12px;
+    border-radius: 5px;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  nav.side-nav a svg { flex-shrink: 0; opacity: 0.85; }
+  nav.side-nav a:hover { background: var(--ink-soft); color: var(--parchment); }
+  nav.side-nav a.current {
+    background: var(--ink-soft);
+    color: var(--parchment);
+    box-shadow: inset 2px 0 0 var(--brass-light);
+  }
+
+  .side-nav .section-gap { height: 18px; }
+
+  .sidebar-footer {
+    margin-top: auto;
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .avatar-mini {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--brass);
+    color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: "Fraunces", serif; font-weight: 600; font-size: 14px;
+    flex-shrink: 0;
+  }
+  .sidebar-footer .who { line-height: 1.3; }
+  .sidebar-footer .who b { display: block; font-size: 13.5px; color: var(--parchment); font-weight: 500; }
+  .sidebar-footer .who span { font-size: 12px; color: rgba(245,241,232,0.55); }
+
+  .nav-toggle {
+    display: none;
+    width: 36px; height: 36px;
+    align-items: center; justify-content: center;
+    background: transparent; border: 1px solid var(--line);
+    border-radius: 4px; color: var(--parchment); cursor: pointer;
+  }
+
+  /* ---------- Main ---------- */
+  .main { flex: 1; min-width: 0; padding: 34px 40px 60px; }
+
+  .topbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 30px;
+  }
+  .topbar h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500;
+    font-size: 26px;
+    margin: 0 0 4px;
+    color: var(--msg);
+  }
+  .topbar .date { font-size: 13.5px; color: var(--slate); }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--line-soft);
+    border-radius: 5px;
+    padding: 9px 14px;
+    min-width: 240px;
+    color: var(--slate);
+  }
+  .search-box input {
+    border: none; outline: none; background: transparent;
+    font-family: inherit; font-size: 14px; color: var(--ink); width: 100%;
+  }
+  .search-box input::placeholder { color: #A9A296; }
+
+  /* ---------- Stat cards ---------- */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 34px;
+  }
+  .stat-card {
+    background: var(--card);
+    border-radius: 6px;
+    padding: 20px 20px 18px;
+    border: 1px solid var(--line-soft);
+  }
+  .stat-card .label { font-size: 13px; color: var(--slate); margin-bottom: 10px; }
+  .stat-card .value {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--ink);
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .stat-card .delta { font-size: 12.5px; font-weight: 500; }
+  .stat-card .delta.up { color: var(--sage); }
+  .stat-card .delta.down { color: var(--rust); }
+
+  /* ---------- Content grid ---------- */
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 22px;
+    align-items: start;
+  }
+
+  .panel {
+    background: var(--card);
+    border-radius: 6px;
+    border: 1px solid var(--line-soft);
+    padding: 24px 26px 26px;
+  }
+  .panel-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .panel-head h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500;
+    font-size: 18px;
+    margin: 0;
+    color: var(--ink);
+  }
+  .panel-head a { font-size: 13px; color: var(--brass); text-decoration: none; }
+  .panel-head a:hover { text-decoration: underline; }
+
+  .course-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  .course-row:first-of-type { border-top: none; padding-top: 0; }
+
+  .course-thumb {
+    width: 46px; height: 46px; border-radius: 6px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: "Fraunces", serif; font-weight: 600; font-size: 16px;
+    color: var(--ink);
+  }
+
+  .course-info { flex: 1; min-width: 0; }
+  .course-info .title { font-size: 14.5px; font-weight: 500; color: var(--ink); margin-bottom: 3px; }
+  .course-info .meta { font-size: 12.5px; color: var(--slate); }
+
+  .progress-track {
+    width: 100%;
+    height: 5px;
+    background: var(--parchment-dim);
+    border-radius: 3px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+  .progress-fill { height: 100%; background: var(--brass); border-radius: 3px; }
+
+  .course-pct { font-size: 13px; color: var(--slate-dark); font-weight: 500; width: 38px; text-align: right; flex-shrink: 0; }
+
+  /* ---------- Activity list ---------- */
+  .activity-item {
+    display: flex;
+    gap: 12px;
+    padding: 13px 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  .activity-item:first-of-type { border-top: none; padding-top: 0; }
+  .activity-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--brass); margin-top: 6px; flex-shrink: 0;
+  }
+  .activity-text { font-size: 13.5px; color: var(--slate-dark); line-height: 1.5; }
+  .activity-text b { color: var(--ink); font-weight: 500; }
+  .activity-time { font-size: 12px; color: var(--slate); margin-top: 2px; }
+
+  .deadline-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  .deadline-item:first-of-type { border-top: none; padding-top: 0; }
+  .deadline-item .name { font-size: 13.5px; color: var(--ink); }
+  .deadline-item .when {
+    font-size: 12px;
+    color: var(--rust);
+    background: rgba(179,69,44,0.08);
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+  .deadline-item .when.soon { color: var(--brass); background: var(--brass-wash); }
+
+  .stack-gap { display: flex; flex-direction: column; gap: 22px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+
+  .fade-in { animation: fadeIn 0.5s ease both; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1000px) {
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .content-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 780px) {
+    body { flex-direction: column; }
+    .sidebar {
+      width: 100%; height: auto; position: static;
+      padding: 18px 20px;
+    }
+    .sidebar .top-row { display: flex; align-items: center; justify-content: space-between; }
+    .brand { margin-bottom: 0; }
+    .nav-toggle { display: inline-flex; }
+    nav.side-nav { display: none; margin-top: 18px; }
+    nav.side-nav.open { display: flex; }
+    .sidebar-footer { display: none; }
+    .main { padding: 26px 20px 50px; }
+    .topbar { flex-direction: column; }
+    .search-box { width: 100%; }
+    .stat-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sidebar fade-in">
+  <div class="top-row">
+    <a href="#home" class="brand">Vistaar<span>.</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 4.5H16M2 9H16M2 13.5H16" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <nav class="side-nav" id="sideNav">
+    <a href="#dashboard" class="current">
+      <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><rect x="1.5" y="1.5" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="9.5" y="1.5" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="1.5" y="9.5" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="9.5" y="9.5" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/></svg>
+      Dashboard
+    </a>
+    <a href="#courses">
+      <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M2 3.5C2 2.67 2.67 2 3.5 2H8V15H3.5C2.67 15 2 14.33 2 13.5V3.5Z" stroke="currentColor" stroke-width="1.3"/><path d="M9 2H13.5C14.33 2 15 2.67 15 3.5V13.5C15 14.33 14.33 15 13.5 15H9V2Z" stroke="currentColor" stroke-width="1.3"/></svg>
+      My courses
+    </a>
+    <a href="#progress">
+      <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M2 14V9M8.5 14V3M15 14V6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Progress
+    </a>
+    <a href="#messages">
+      <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M2 4.5C2 3.67 2.67 3 3.5 3H13.5C14.33 3 15 3.67 15 4.5V10.5C15 11.33 14.33 12 13.5 12H6L3 14.5V12H3.5C2.67 12 2 11.33 2 10.5V4.5Z" stroke="currentColor" stroke-width="1.3"/></svg>
+      Messages
+    </a>
+    <div class="section-gap"></div>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+    <a href="#settings">Settings</a>
+    <a href="#logout">Log out</a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="avatar-mini">RM</div>
+    <div class="who">
+      <b>Riya Mehta</b>
+      <span>Premium learner</span>
+    </div>
+  </div>
+</div>
+
+<main class="main fade-in">
+
+  <div class="topbar">
+    <div>
+      <h1>Good evening, <%=user%></h1>
+      <div class="date">Friday, 18 September — here's where things stand</div>
+    </div>
+    <div class="search-box">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M10 10L13 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <input type="text" placeholder="Search courses, lessons..." />
+    </div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="label">Courses in progress</div>
+      <div class="value">5 <span class="delta up">+1 this week</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Completed</div>
+      <div class="value">12 <span class="delta up">+2 this month</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Hours learned</div>
+      <div class="value">86 <span class="delta up">+6 this week</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Current streak</div>
+      <div class="value">9 days <span class="delta down">−2 vs best</span></div>
+    </div>
+  </div>
+
+  <div class="content-grid">
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Continue learning</h2>
+        <a href="#courses">View all courses</a>
+      </div>
+
+      <div class="course-row">
+        <div class="course-thumb" style="background:#E7D9BC;">UX</div>
+        <div class="course-info">
+          <div class="title">UX Research Fundamentals</div>
+          <div class="meta">Module 4 of 7 · Sarah Kohli</div>
+          <div class="progress-track"><div class="progress-fill" style="width:58%;"></div></div>
+        </div>
+        <div class="course-pct">58%</div>
+      </div>
+
+      <div class="course-row">
+        <div class="course-thumb" style="background:#D7C9E0;">DS</div>
+        <div class="course-info">
+          <div class="title">Data Storytelling with Charts</div>
+          <div class="meta">Module 2 of 5 · Arjun Rao</div>
+          <div class="progress-track"><div class="progress-fill" style="width:32%;"></div></div>
+        </div>
+        <div class="course-pct">32%</div>
+      </div>
+
+      <div class="course-row">
+        <div class="course-thumb" style="background:#C9DACB;">JS</div>
+        <div class="course-info">
+          <div class="title">Advanced JavaScript Patterns</div>
+          <div class="meta">Module 6 of 8 · Neha Iyer</div>
+          <div class="progress-track"><div class="progress-fill" style="width:81%;"></div></div>
+        </div>
+        <div class="course-pct">81%</div>
+      </div>
+
+      <div class="course-row">
+        <div class="course-thumb" style="background:#E3CFC4;">BR</div>
+        <div class="course-info">
+          <div class="title">Brand Identity Design</div>
+          <div class="meta">Module 1 of 6 · Kabir Sethi</div>
+          <div class="progress-track"><div class="progress-fill" style="width:12%;"></div></div>
+        </div>
+        <div class="course-pct">12%</div>
+      </div>
+    </div>
+
+    <div class="stack-gap">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Upcoming deadlines</h2>
+        </div>
+        <div class="deadline-item">
+          <div class="name">UX Research — Assignment 3</div>
+          <div class="when soon">Tomorrow</div>
+        </div>
+        <div class="deadline-item">
+          <div class="name">Data Storytelling — Quiz 2</div>
+          <div class="when">In 4 days</div>
+        </div>
+        <div class="deadline-item">
+          <div class="name">JS Patterns — Final project</div>
+          <div class="when">In 9 days</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Recent activity</h2>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot"></div>
+          <div>
+            <div class="activity-text">You completed <b>Lesson 4: Usability heuristics</b></div>
+            <div class="activity-time">2 hours ago</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot"></div>
+          <div>
+            <div class="activity-text">New comment on your submission in <b>JS Patterns</b></div>
+            <div class="activity-time">Yesterday</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot"></div>
+          <div>
+            <div class="activity-text">You earned the badge <b>7-day streak</b></div>
+            <div class="activity-time">2 days ago</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+  const toggle = document.getElementById('navToggle');
+  const nav = document.getElementById('sideNav');
+  toggle.addEventListener('click', () => {
+    const isOpen = nav.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+</script>
+
+</body>
+</html>

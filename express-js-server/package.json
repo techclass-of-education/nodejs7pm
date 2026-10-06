@@ -1,0 +1,15 @@
+{
+  "name": "express-js-server",
+  "version": "1.0.0",
+  "description": "Practice express server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "tce",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^6.0.1",
+    "express": "^5.2.1"
+  }
+}
