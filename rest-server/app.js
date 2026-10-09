@@ -2,6 +2,8 @@ const express = require("express")
 const { connectToMongoDB, disconnectFromMongoDB } = require("./config/db")
 const app = express()
 
+app.use(express.json())
+
   connectToMongoDB().then(function (res) {
         console.log("Database Connected")
     }).catch(function (err) {
