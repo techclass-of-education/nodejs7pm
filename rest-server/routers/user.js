@@ -2,16 +2,20 @@ const express = require("express")
 const UserModel = require("../models/user")
 const { default: mongoose } = require("mongoose")
 const User = require("../models/user")
+
 const router = express.Router()
 
-router.get("/", function (req, res)   //localhost:5000/user
+router.get("/", async function (req, res)   //localhost:5000/user
 {
-    res.send("Fetch All users")
+    const users=await UserModel.find()  // fetch all docs
+    res.json({users})
 })
 
-router.get("/:id", function (req, res)   //localhost:5000/user/12
+router.get("/:id", async function (req, res)   //localhost:5000/user/12
 {
-    res.send("Fetch id user")
+    const user= await UserModel.findById(new mongoose.Types.ObjectId(req.params.id))
+    // console.log(user)
+    res.json({user})
 })
 
 router.post("/auth", async function (req, res) {
