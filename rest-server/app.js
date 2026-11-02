@@ -1,14 +1,28 @@
 const express = require("express")
 const { connectToMongoDB, disconnectFromMongoDB } = require("./config/db")
+// const session=require("express-session")
+const cookieParser=require("cookie-parser")
+
 const app = express()
+
+app.use(cookieParser())  // allow cookies
+
+// app.use(session({
+//     secret:"my-session-secret-key",
+//     resave:false,
+//     saveUninitialized:false,
+//     cookie:{
+//         httpOnly:true,
+//         secure:false,  // true for https / production
+//         sameSite:"lax",
+//         maxAge:60*60*1000 // 1 hr in milliseconds
+//     }
+// }))
 
 app.use(express.json())
 
-  connectToMongoDB().then(function (res) {
-        console.log("Database Connected")
-    }).catch(function (err) {
-        console.log(err)
-    })
+
+  
 
 
 //////Routers////////////
@@ -16,6 +30,7 @@ app.use(express.json())
 const userRouter = require("./routers/user")
 const productRouter = require("./routers/product")
 const serviceRouter = require("./routers/service")
+
 
 
 app.use("/user", userRouter)   //localhost:5000/user
@@ -31,7 +46,19 @@ app.get("/", function (req, res) {
 })
 
 
-app.listen(5000, function () {
-    console.log("Server started on http://localhost:5000")
-})
+
+
+    
+
+    app.listen(5000, () => {
+
+            connectToMongoDB().then(function (res) {
+                    console.log("Database Connected")
+                }).catch(function (err) {
+                    console.log(err)
+                })
+
+        console.log("Server running on port 5000");
+    });
+
 

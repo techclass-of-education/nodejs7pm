@@ -1,18 +1,57 @@
 const express = require("express")
 const UserModel = require("../models/user")
 const { default: mongoose } = require("mongoose")
-const User = require("../models/user")
+const jwt=require("jsonwebtoken")
 const bcrypt=require("bcrypt")
 
 const router = express.Router()
+const jwtSecret="this_is_a_jwt_secret_key_to_encrypt"
 
-router.get("/", async function (req, res)   //localhost:5000/user
+
+const authVerifyToken=(req,res,next)=>
 {
-    const users=await UserModel.find()  // fetch all docs
-    res.json({users})
+            const token=req.cookies.token
+            if(!token) return res.json({msg:"token not found"})
+
+            const decoded=jwt.verify(token,jwtSecret)
+
+            const user=decoded
+
+            req.user=user
+
+            next()
+
+}
+
+
+// function authSessionMiddleware(req,res,next)
+// {
+//     if(req.session.user)
+//     {
+//         next()
+//     }
+//     else{
+//         return res.json({auth:false,msg:"User not logged-In"})
+//     }
+// }
+
+
+router.get("/logout",(req,res)=>{
+    req.session.user=null
+    res.json({auth:false,msg:"logout successfull"})
 })
 
-router.get("/:id", async function (req, res)   //localhost:5000/user/12
+
+router.get("/",authVerifyToken, async function (req, res)   //localhost:5000/user
+{
+    const user=req.user
+    const users=await UserModel.find()  // fetch all docs
+    
+    res.json({users,loginUser:user})
+})
+
+
+router.get("/:id",authVerifyToken, async function (req, res)   //localhost:5000/user/12
 {
 
     const user= await UserModel.findById(new mongoose.Types.ObjectId(req.params.id))
@@ -21,17 +60,33 @@ router.get("/:id", async function (req, res)   //localhost:5000/user/12
 })
 
 router.post("/auth", async function (req, res) {
-    const loginDetails = req.body
+    const loginDetails = req.body  // extracting payload from req.body
+    console.log(loginDetails)
     // {email:"",password:""}
     try {
         const user = await UserModel.findOne({ email: loginDetails.email })
-
+        console.log(user)
         if (!user) {
             return res.json({ msg: "login failed, email-id wrong", auth: false })
         }
 
         const isMatch=await bcrypt.compare(loginDetails.password,user.password)
+
         if (isMatch) {
+
+           const signData={
+            id:user._id,
+            email:user.email
+           }
+
+           const token=jwt.sign(signData,jwtSecret,{expiresIn:"1h"})
+
+           res.cookie("token",token,{
+            maxAge:60*60*1000,
+            httpOnly:true,
+            secure:false,
+            sameSite:"lax"})
+
             res.json({ msg: "login success", auth: true })
         }
         else {
@@ -43,15 +98,17 @@ router.post("/auth", async function (req, res) {
     }
 })
 
+
+
 router.post("/", async function (req, res) {
-    // console.log(req.body)
+    console.log(req.body)
     const hashPassword=await bcrypt.hash(req.body.password,10)
     const savedUser = await UserModel.create({...req.body,password:hashPassword})
     res.json({ user: savedUser, msg: "User Saved" })
     // res.json({msg:"User Saved"})
 })
 
-router.put("/", async function (req, res) {
+router.put("/",authVerifyToken, async function (req, res) {
         const {id,user}=req.body
       const updatedUser = await UserModel.findByIdAndUpdate(id,user)
       if(!updatedUser)
@@ -62,11 +119,11 @@ router.put("/", async function (req, res) {
    
 })
 
-router.patch("/", function (req, res) {
+router.patch("/",authVerifyToken, function (req, res) {
     res.send("Parital Update user")
 })
 
-router.delete("/:id", async function (req, res) {
+router.delete("/:id",authVerifyToken, async function (req, res) {
    const user=await UserModel.findByIdAndDelete(new mongoose.Types.ObjectId(req.params.id))
 
    if(!user)
@@ -75,8 +132,6 @@ router.delete("/:id", async function (req, res) {
    }
 
    res.json({msg:"User deleted.."})
-
-
    
 })
 
