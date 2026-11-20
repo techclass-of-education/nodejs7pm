@@ -5,7 +5,7 @@ const jwt=require("jsonwebtoken")
 const bcrypt=require("bcrypt")
 
 const router = express.Router()
-const jwtSecret="this_is_a_jwt_secret_key_to_encrypt"
+const jwtSecret="this_is_a_jwt_secret_key_to_encrypt" // key to encrypt and decrypt the jwt token
 
 
 const authVerifyToken=(req,res,next)=>
